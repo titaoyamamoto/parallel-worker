@@ -1,0 +1,135 @@
+version: '3.7'
+
+services:
+
+  elasticsearch:
+    image: elasticsearch:7.4.0
+    restart: on-failure
+    container_name: elasticsearch
+    environment:
+      - node.name=elasticsearch
+      - discovery.seed_hosts=elasticsearch,elasticsearch-cluster
+      - cluster.initial_master_nodes=elasticsearch,elasticsearch-cluster
+      - cluster.name=docker-cluster
+      # - bootstrap.memory_lock=true
+      # - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - ./scripts/docker/elasticsearch:/usr/share/elasticsearch/data
+    ports:
+      - 9200:9200
+      - 9300:9300
+    networks:
+      - api-network-driver
+
+  elasticsearch-cluster:
+    image: elasticsearch:7.4.0
+    container_name: elasticsearch-cluster
+    environment:
+      - node.name=elasticsearch-cluster
+      - discovery.seed_hosts=elasticsearch,elasticsearch-cluster
+      - cluster.initial_master_nodes=elasticsearch,elasticsearch-cluster
+      - cluster.name=docker-cluster
+      # - bootstrap.memory_lock=true
+      # - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    # volumes:
+    #   - ./scripts/docker/elasticsearch:/usr/share/elasticsearch/data
+    networks:
+      - api-network-driver
+
+  kibana:
+    image: kibana:7.4.0
+    container_name: kibana
+    restart: on-failure
+    ports:
+      - 5601:5601
+    depends_on:
+      - elasticsearch
+    environment:
+      SERVER_NAME: localhost
+      ELASTICSEARCH_HOSTS: http://elasticsearch:9200
+    networks:
+      - api-network-driver
+
+  logstash:
+    image: logstash:7.4.0
+    container_name: logstash
+    restart: always
+    volumes:
+      - ./scripts/docker/logstash/logstash.conf:/etc/logstash/conf.d/logstash.conf:ro
+    depends_on:
+      - elasticsearch
+    ports:
+      - "5400:5400"
+    command: logstash -f /etc/logstash/conf.d/logstash.conf
+    networks:
+      - api-network-driver
+
+  rabbitmq:
+    image: rabbitmq:3.7.17-management
+    hostname: rabbitmq
+    restart: on-failure
+    ports:
+        - 5672:5672
+        - 15672:15672
+    volumes:
+        - ./scripts/docker/rabbitmq/definitions.json:/etc/rabbitmq/definitions.json:ro
+    environment:
+        RABBITMQ_ERLANG_COOKIE: 6085e2412b6fa88647466c6a81c0cea0
+        RABBITMQ_DEFAULT_USER: rabbitmq
+        RABBITMQ_DEFAULT_PASS: rabbitmq
+        RABBITMQ_DEFAULT_VHOST: /
+    container_name: rabbitmq
+    networks: 
+      - api-network-driver
+
+  redisdb:
+    image: redis
+    restart: on-failure
+    ports:
+      - "6379:6379"
+    container_name: redisdb
+    networks: 
+      - api-network-driver
+
+  worker:
+    build:
+      context: ./workers
+      dockerfile: Dockerfile   
+    depends_on:
+      - rabbitmq
+      - redisdb
+      - elasticsearch
+    restart: on-failure
+    image: worker
+    networks: 
+      - api-network-driver
+
+  api-querycataloglist:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: on-failure
+    ports:
+      - "3000:3000"
+    depends_on:
+      - rabbitmq
+      - redisdb
+    image: api-querycataloglist
+    container_name: api-querycataloglist
+    networks: 
+      - api-network-driver
+
+networks:
+  api-network-driver:
+     name: api-network-driver
+     ipam:
+      config:
+        -  subnet: 192.168.0.1/24

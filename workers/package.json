@@ -1,0 +1,28 @@
+{
+  "name": "worker",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node worker.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/titaoyamamoto/parallel-worker.git"
+  },
+  "author": "Titao Yamamoto",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/titaoyamamoto/parallel-worker/issues"
+  },
+  "homepage": "https://github.com/titaoyamamoto/parallel-worker#readme",
+  "dependencies": {
+    "amqplib": "^0.5.5",
+    "axios": "^0.19.0",
+    "net": "^1.0.2",
+    "redis": "^2.8.0",
+    "uuid": "^3.3.3",
+    "xml-js": "^1.6.11"
+  }
+}
