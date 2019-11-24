@@ -1,19 +1,17 @@
 var amqp = require('amqplib');
 const { rabbitMQConfig } = require('../../../application.config');
 
-const queueName = 'querycataloglist';
-
 var conn = {};
 var channel = {};
 
 const openConnection = async () => {
     conn = await amqp.connect(rabbitMQConfig.connectionString());
     channel = await conn.createChannel();
-    await channel.assertQueue(queueName, { durable: false });
+    await channel.assertQueue(rabbitMQConfig.queueName, { durable: false });
 }
 
 const push = async (clientId) => {
-    await channel.sendToQueue(queueName, Buffer.from(clientId));
+    await channel.sendToQueue(rabbitMQConfig.queueName, Buffer.from(clientId));
 }
 
 const closeConnection = async () => {
@@ -24,7 +22,7 @@ const closeConnection = async () => {
 const getCount = async () => {
     const conn = await amqp.connect(rabbitMQConfig.connectionString());
     const channel = await conn.createChannel();
-    let assert = await channel.assertQueue(queueName, { durable: false });
+    let assert = await channel.assertQueue(rabbitMQConfig.queueName, { durable: false });
 
     return assert.messageCount;
 }

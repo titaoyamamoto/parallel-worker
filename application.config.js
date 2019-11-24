@@ -9,6 +9,7 @@ const rabbitMQConfig = {
     port: 5672,
     username: 'rabbitmq',
     password: 'rabbitmq',
+    queueName: 'clientIdList',
     connectionString (){
         return `amqp://${this.username}:${this.password}@${this.host}:${this.port}`;
     }
