@@ -14,7 +14,7 @@ let Routes = require('./src/routes');
 
     const swaggerOptions = {
         info: {
-            title: 'Service - API Documentation',
+            title: 'CatalogList - API Documentation',
             version: Pack.version,
         },
         documentationPage: process.env.NODE_ENV !== 'production'

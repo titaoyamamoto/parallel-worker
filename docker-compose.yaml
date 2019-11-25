@@ -112,7 +112,7 @@ services:
     networks: 
       - api-network-driver
 
-  api-querycataloglist:
+  api-cataloglist:
     build:
       context: .
       dockerfile: Dockerfile
@@ -122,8 +122,8 @@ services:
     depends_on:
       - rabbitmq
       - redisdb
-    image: api-querycataloglist
-    container_name: api-querycataloglist
+    image: api-cataloglist
+    container_name: api-cataloglist
     networks: 
       - api-network-driver
 
