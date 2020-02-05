@@ -10,8 +10,6 @@ client.connect({ host: logstashConfig.host, port: logstashConfig.port }, functio
     console.log('[*] Connected with TCP logstash.');
 });
 
-const sleep = (waitTimeInMs) => new Promise(resolve => setTimeout(resolve, waitTimeInMs));
-
 amqp.connect(rabbitMQConfig.connectionString(), function (err, conn) {
 
     conn.createChannel(function (err, ch) {
@@ -27,19 +25,12 @@ amqp.connect(rabbitMQConfig.connectionString(), function (err, conn) {
 
             let eventLog = {
                 id: eventLogId,
-                clientId: clientId
+                clientId: clientId,
+                startTime: new Date(),
             };
 
             try {
                 console.log(` [x] Received clientId:${clientId} | eventLogId ${eventLogId}`);
-
-                eventLog.startTime = new Date();
-                client.write(JSON.stringify(eventLog) + '\n');
-
-                //Logstash doesn't maintain an ordered queue of events
-                //sleep for 2 seconds because that
-                //TODO Save all information separate, code join in kibana dashboard and remove that.
-                await sleep(2000); 
 
                 //mock
                 let justExample = [
