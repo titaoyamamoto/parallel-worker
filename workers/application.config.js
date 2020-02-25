@@ -11,9 +11,14 @@ const rabbitMQConfig = {
     password: 'rabbitmq',
     queueName: 'clientIdList',
     prefetch: 5,
+    healthCheckTime: 5000,
+    apiPort: 15672,
     noAck: false, //manual acknowledgment mode
     connectionString (){
         return `amqp://${this.username}:${this.password}@${this.host}:${this.port}`;
+    },
+    healthCheckUrl(){
+        return `http://${this.host}:${this.apiPort}/api/overview`;
     }
 }
 
