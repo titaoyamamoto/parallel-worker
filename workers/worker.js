@@ -1,5 +1,5 @@
 var amqp = require('amqplib/callback_api');
-const cache = require('./services/cache/redisdb');
+//const cache = require('./services/cache/redisdb');
 const uuidv1 = require('uuid/v1');
 const axios = require('axios');
 
@@ -9,15 +9,20 @@ const Net = require('net');
 const client = new Net.Socket();
 
 let start = setInterval(async () => {
-    console.log('Check RabbitMQ to start server...');
 
-    let healthCheck = await axios.get(rabbitMQConfig.healthCheckUrl());
+    try {
+        console.log('Check RabbitMQ to start server...');
+        const healthCheck = await axios.get(rabbitMQConfig.healthCheckUrl());
 
-    if (healthCheck) {
-        startServer();
-        clearInterval(start);
+        if (healthCheck) {
+            startServer();
+            clearInterval(start);
+        }
+    } catch (ex) {
+
     }
-}, 2000);
+
+}, rabbitMQConfig.healthCheckTime);
 
 let startServer = async () => {
     await client.connect({ host: logstashConfig.host, port: logstashConfig.port }, function () {

@@ -14,11 +14,14 @@ const rabbitMQConfig = {
     healthCheckTime: 5000,
     apiPort: 15672,
     noAck: false, //manual acknowledgment mode
+    urlRabbitMq(){
+        return `${this.username}:${this.password}@${this.host}`;
+    },
     connectionString (){
-        return `amqp://${this.username}:${this.password}@${this.host}:${this.port}`;
+        return `amqp://${this.urlRabbitMq()}:${this.port}`;
     },
     healthCheckUrl(){
-        return `http://${this.host}:${this.apiPort}/api/overview`;
+        return `http://${this.urlRabbitMq()}:${this.apiPort}/api/overview`;
     }
 }
 
