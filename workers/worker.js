@@ -11,10 +11,13 @@ const client = new Net.Socket();
 let start = setInterval(async () => {
 
     try {
-        console.log('Check RabbitMQ to start server...');
-        const healthCheck = await axios.get(rabbitMQConfig.healthCheckUrl());
+        console.log('Check RabbitMQ and Logstash to start server...');
+        const healthCheckRabbitMQ = await axios.get(rabbitMQConfig.healthCheckUrl());
+        if(!healthCheckRabbitMQ) console.log('-> RabbitMQ is down yet');
+        const healthCheckLogstash = await axios.get(logstashConfig.healthCheckUrl());
+        if(!healthCheckLogstash) console.log('-> Logstash is down yet');
 
-        if (healthCheck) {
+        if (healthCheckRabbitMQ && healthCheckLogstash) {
             startServer();
             clearInterval(start);
         }

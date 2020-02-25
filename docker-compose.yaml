@@ -68,6 +68,7 @@ services:
       - elasticsearch
     ports:
       - "5400:5400"
+      - "9600:9600"
     command: logstash -f /etc/logstash/conf.d/logstash.conf
     networks:
       - api-network-driver

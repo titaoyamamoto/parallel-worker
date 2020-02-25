@@ -28,8 +28,9 @@ const rabbitMQConfig = {
 const logstashConfig ={
     host: 'logstash',
     port: 5400,
-    urlPost(){
-        return `http://${this.host}:${this.port}/`;
+    apiPort: 9600,
+    healthCheckUrl(){
+        return `http://${this.host}:${this.apiPort}/?pretty`;
     }
 }
 
