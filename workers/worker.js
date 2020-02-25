@@ -1,5 +1,5 @@
 var amqp = require('amqplib/callback_api');
-//const cache = require('./services/cache/redisdb');
+const cache = require('./services/cache/redisdb');
 const uuidv1 = require('uuid/v1');
 const axios = require('axios');
 
@@ -8,15 +8,31 @@ const { rabbitMQConfig, logstashConfig } = require('./application.config');
 const Net = require('net');
 const client = new Net.Socket();
 
+var rabbitmqConnected, logstashConnected = false;
+
 let start = setInterval(async () => {
 
     try {
-        console.log('Check RabbitMQ and Logstash to start server...');
-        const healthCheckRabbitMQ = await axios.get(rabbitMQConfig.healthCheckUrl());
-        const healthCheckLogstash = await axios.get(logstashConfig.healthCheckUrl());
+
+        if (!rabbitmqConnected) {
+            console.log('Checking RabbitMQ to connect in the server...');
+            const healthCheckRabbitMQ = await axios.get(rabbitMQConfig.healthCheckUrl());
+            if (healthCheckRabbitMQ && !rabbitmqConnected) {
+                rabbitmqConnected = true;
+                startRabbitmqServer();
+            }
+        }
+
+        if (!logstashConnected) {
+            console.log('Checking Logstash to connect in the server...');
+            const healthCheckLogstash = await axios.get(logstashConfig.healthCheckUrl());
+            if (healthCheckLogstash && !logstashConnected) {
+                logstashConnected = true;
+                startLogstashServer();
+            }
+        }
 
         if (healthCheckRabbitMQ && healthCheckLogstash) {
-            startServer();
             clearInterval(start);
         }
     } catch (ex) {
@@ -25,18 +41,20 @@ let start = setInterval(async () => {
 
 }, rabbitMQConfig.healthCheckTime);
 
-let startServer = async () => {
+let startLogstashServer = async () => {
     await client.connect({ host: logstashConfig.host, port: logstashConfig.port }, function () {
         console.log('[*] Connected with TCP logstash.');
     });
+};
+
+let startRabbitmqServer = async () => {
 
     amqp.connect(rabbitMQConfig.connectionString(), function (err, conn) {
-
         conn.createChannel(function (err, ch) {
 
             ch.assertQueue(rabbitMQConfig.queueName, { durable: false });
             ch.prefetch(rabbitMQConfig.prefetch);
-            console.log(`[*] Waiting for messages in RabbitMQ for ${rabbitMQConfig.queueName}.`);
+            console.log(`[*] Connected with RabbitMQ - Waiting for messages in ${rabbitMQConfig.queueName}.`);
 
             ch.consume(rabbitMQConfig.queueName, async function (msg) {
 
@@ -78,8 +96,7 @@ let startServer = async () => {
             }, { noAck: rabbitMQConfig.noAck });
         });
     });
-
-}
+};
 
 
 
