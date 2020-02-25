@@ -13,9 +13,7 @@ let start = setInterval(async () => {
     try {
         console.log('Check RabbitMQ and Logstash to start server...');
         const healthCheckRabbitMQ = await axios.get(rabbitMQConfig.healthCheckUrl());
-        if(!healthCheckRabbitMQ) console.log('-> RabbitMQ is down yet');
         const healthCheckLogstash = await axios.get(logstashConfig.healthCheckUrl());
-        if(!healthCheckLogstash) console.log('-> Logstash is down yet');
 
         if (healthCheckRabbitMQ && healthCheckLogstash) {
             startServer();
