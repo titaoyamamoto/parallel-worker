@@ -5,7 +5,7 @@ const queue = require('../../../service/queue/rabbitmq');
 
 require("../../../resource/polyfill");
 
-const clientsAvailables = async (request, reply) => {
+const offersAvailableToClient = async (request, reply) => {
 
     let { offersIds } = request.payload;
 
@@ -83,5 +83,5 @@ const clientsAvailables = async (request, reply) => {
 }
 
 module.exports = {
-    clientsAvailables,
+    offersAvailableToClient,
 }

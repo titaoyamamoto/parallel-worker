@@ -4,11 +4,11 @@ var api = require('../controllers/api');
 module.exports = [
     {
         method: 'POST',
-        path: '/api/clientsAvailables',
+        path: '/api/offersAvailableToClient',
         config: {
-            handler: api.clientsAvailables,
+            handler: api.offersAvailableToClient,
             description: 'Result',
-            notes: ['Endpoint to communication with watson assistant.'],
+            notes: ['Endpoint to find the offers available to client.'],
             validate: {
                 payload: {
                     offersIds: Joi.array().items(Joi.array().items(Joi.string())),
@@ -34,7 +34,7 @@ module.exports = [
                     }
                 }
             },
-            tags: ['api', 'parallel', 'worker'],
+            tags: ['api', 'offers', 'client'],
         }
     }
 ];

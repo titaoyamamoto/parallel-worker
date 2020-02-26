@@ -71,13 +71,13 @@ let startRabbitmqServer = async () => {
                     console.log(` [x] Received clientId:${clientId} | eventLogId ${eventLogId}`);
 
                     //mock
-                    let justExample = [
+                    let justOffersExample = [
                         { id: '1-1abc1', name: 'name1', description: 'desc1', category: 'cate1', subcategory: 'sub1' },
                         { id: '1-1abc2', name: 'name2', description: 'desc2', category: 'cate2', subcategory: 'sub2' },
                         { id: '1-1abc3', name: 'name3', description: 'desc3', category: 'cate3', subcategory: 'sub3' }
                     ];
 
-                    await cache.setByKey(clientId, justExample);
+                    await cache.setByKey(clientId, justOffersExample);
 
                     eventLog.endTime = new Date();
                     client.write(JSON.stringify(eventLog) + '\n');
