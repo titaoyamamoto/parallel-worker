@@ -113,7 +113,7 @@ services:
     networks: 
       - api-network-driver
 
-  api-cataloglist:
+  api-parallel-worker:
     build:
       context: .
       dockerfile: Dockerfile
@@ -123,8 +123,8 @@ services:
     depends_on:
       - rabbitmq
       - redisdb
-    image: api-cataloglist
-    container_name: api-cataloglist
+    image: api-parallel-worker
+    container_name: api-parallel-worker
     networks: 
       - api-network-driver
 

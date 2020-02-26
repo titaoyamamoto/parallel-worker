@@ -1,3 +1,3 @@
-const cataloglist = require('./api/v1/routes/cataloglist');
+const api = require('./api/v1/routes/api');
 
-module.exports = [].concat(cataloglist);
+module.exports = [].concat(api);

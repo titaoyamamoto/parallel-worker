@@ -1,12 +1,12 @@
 const Joi = require('@hapi/joi');
-var controller = require('../controllers/cataloglist');
+var api = require('../controllers/api');
 
 module.exports = [
     {
         method: 'POST',
-        path: '/cataloglist/clientsAvailables',
+        path: '/api/clientsAvailables',
         config: {
-            handler: controller.clientsAvailables,
+            handler: api.clientsAvailables,
             description: 'Result',
             notes: ['Endpoint to communication with watson assistant.'],
             validate: {
@@ -34,7 +34,7 @@ module.exports = [
                     }
                 }
             },
-            tags: ['api', 'querycatalog', 'querycataloglist'],
+            tags: ['api', 'parallel', 'worker'],
         }
     }
 ];
